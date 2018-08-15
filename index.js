@@ -47,6 +47,7 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
   // 查看結果
   await page.goto(signInUrl);
+  await page.keyboard.press('CapsLock');
   await page.type('#psnCode', credential.id);
   await page.type('#password', credential.password);
   await page.click(lookupSelector);
