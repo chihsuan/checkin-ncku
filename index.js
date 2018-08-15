@@ -8,21 +8,27 @@ const screenshotPath = './screenshot.jpg';
 
 program
   .version('0.1.0')
-  .option('-a, -- [action]', 'Add the specified action', 'None')
-  .option('-m, -- [sendMail]', 'Add the specified action', false)
+  .option('-a, --action [action]', 'Add the specified action', 'login-system')
+  .option('-m, --sendMail [sendMail]', 'Add the specified action', false)
   .parse(process.argv);
+
+const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
 (async () => {
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
-  const browser = await puppeteer.launch({ headless: true});
+  const browser = await puppeteer.launch({ headless: false});
   const page = await browser.newPage();
 
-  const action = program.action;
-
+  page.setViewport({
+    width: 1024,
+    height: 728
+  });
   const signInSelector = '.span11 button:nth-child(1)';
   const signOutSelector = '.span11 button:nth-child(2)';
   const signInSystemSelector = '.row-fluid:nth-child(5) button';
   const lookupSelector = '.row-fluid:nth-child(4) button';
+
+  const action = program.action;
 
   // 打卡 or 登入
   await page.goto(signInUrl);
@@ -43,6 +49,7 @@ program
   await page.type('#password', credential.password);
   await page.keyboard.press('CapsLock');
   await page.click(lookupSelector);
+  await delay(1000);
   await page.screenshot({path: screenshotPath});
 
   if (program.sendMail) {
@@ -61,3 +68,4 @@ program
 
   await browser.close();
 })();
+
