@@ -17,7 +17,7 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
 (async () => {
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
-  const browser = await puppeteer.launch({ headless: program.headless});
+  const browser = await puppeteer.launch({ headless: Boolean(program.headless)});
   const page = await browser.newPage();
 
   page.setViewport({
@@ -35,6 +35,7 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
   await page.goto(signInUrl);
   await page.type('#psnCode', credential.id);
   await page.type('#password', credential.password);
+  await page.keyboard.press('CapsLock');
   
   if (action === 'signin') {
     await page.click(signInSelector);
@@ -48,7 +49,6 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
   await page.goto(signInUrl);
   await page.type('#psnCode', credential.id);
   await page.type('#password', credential.password);
-  await page.keyboard.press('CapsLock');
   await page.click(lookupSelector);
   await delay(1000);
   await page.screenshot({path: screenshotPath});

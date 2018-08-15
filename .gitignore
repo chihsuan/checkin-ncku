@@ -1,3 +1,4 @@
 *.jpg
+*.png
 credential.json
 node_modules
