@@ -54,9 +54,9 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
   if (program.sendMail) {
     mail({
-      from: 'NCKU bot <bot@ncku.netdb>', // sender address
+      from: 'NCKU Bot <bot@ncku.netdb>', // sender address
       to: 'Chi-Hsuan Huang <chihsuan.tw@gmail.com>', // list of receivers
-      subject: '每日打卡結果', // Subject line
+      subject: '線上簽到退作業結果', // Subject line
       text: '', // plaintext body
       attachments: [
         {   
