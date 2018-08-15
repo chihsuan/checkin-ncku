@@ -9,14 +9,15 @@ const screenshotPath = './screenshot.jpg';
 program
   .version('0.1.0')
   .option('-a, --action [action]', 'Add the specified action', 'login-system')
-  .option('-m, --sendMail [sendMail]', 'Add the specified action', false)
+  .option('-m, --sendMail [sendMail]', 'Send screenshot or not', false)
+  .option('-h, --headless [headless]', 'Use headless mode', true)
   .parse(process.argv);
 
 const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
 (async () => {
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
-  const browser = await puppeteer.launch({ headless: false});
+  const browser = await puppeteer.launch({ headless: program.headless});
   const page = await browser.newPage();
 
   page.setViewport({
@@ -55,7 +56,7 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
   if (program.sendMail) {
     mail({
       from: 'NCKU Bot <bot@ncku.netdb>', // sender address
-      to: 'Chi-Hsuan Huang <chihsuan.tw@gmail.com>', // list of receivers
+      to: credential.email, // list of receivers
       subject: '線上簽到退作業結果', // Subject line
       text: '', // plaintext body
       attachments: [
