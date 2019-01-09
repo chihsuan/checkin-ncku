@@ -10,24 +10,23 @@ program
   .version('0.1.0')
   .option('-a, --action [action]', 'Add the specified action', 'login-system')
   .option('-m, --sendMail [sendMail]', 'Send screenshot or not', false)
-  .option('-h, --headless [headless]', 'Use headless mode', true)
   .parse(process.argv);
 
 const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
 (async () => {
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
-  const browser = await puppeteer.launch({ headless: Boolean(program.headless)});
+  const browser = await puppeteer.launch({ headless: true});
   const page = await browser.newPage();
 
   page.setViewport({
     width: 1024,
     height: 728
   });
-  const signInSelector = '.span11 button:nth-child(1)';
-  const signOutSelector = '.span11 button:nth-child(2)';
-  const signInSystemSelector = '.row-fluid:nth-child(5) button';
-  const lookupSelector = '.row-fluid:nth-child(4) button';
+  const signInSelector = '.row-fluid:nth-child(3) button:nth-child(1)';
+  const signOutSelector = '.row-fluid:nth-child(3) button:nth-child(2)';
+  const signInSystemSelector = '.row-fluid:nth-child(6) button';
+  const lookupSelector = '.row-fluid:nth-child(5) button';
 
   const action = program.action;
 
@@ -47,9 +46,9 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
 
   // 查看結果
   await page.goto(signInUrl);
-  await page.keyboard.press('CapsLock');
   await page.type('#psnCode', credential.id);
   await page.type('#password', credential.password);
+  await page.keyboard.press('CapsLock');
   await page.click(lookupSelector);
   await delay(1000);
   await page.screenshot({path: screenshotPath});
