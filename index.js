@@ -29,13 +29,15 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
   const lookupSelector = '.row-fluid:nth-child(5) button';
 
   const action = program.action;
+  // Random delay in 30 mins
+  await delay(Math.floor(Math.random() * 1000 * 30));
 
   // 打卡 or 登入
   await page.goto(signInUrl);
   await page.type('#psnCode', credential.id);
   await page.type('#password', credential.password);
   await page.keyboard.press('CapsLock');
-  
+
   if (action === 'signin') {
     await page.click(signInSelector);
   } else if (action == 'signout') {
