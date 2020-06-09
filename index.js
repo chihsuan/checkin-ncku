@@ -13,10 +13,22 @@ program
   .parse(process.argv);
 
 const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
+const login = async (page, url, id, pw) => {
+  await page.goto(url);
+  await delay(3000);
+  await page.type('#psnCode', id);
+  await page.type('#password', pw);
+  await page.keyboard.press('CapsLock');
+  await delay(3000);
+}
 
 (async () => {
+  // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
+  await delay(Math.floor(Math.random() * 1000 * 60 * 30));
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
-  const browser = await puppeteer.launch({ headless: true});
+  const browser = await puppeteer.launch({
+    headless: true
+  });
   const page = await browser.newPage();
 
   page.setViewport({
@@ -27,17 +39,35 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
   const signOutSelector = '.row-fluid:nth-child(3) button:nth-child(2)';
   const signInSystemSelector = '.row-fluid:nth-child(6) button';
   const lookupSelector = '.row-fluid:nth-child(5) button';
-
+  // 學校日曆
+  const calendarUrl = 'https://eadm.ncku.edu.tw/welldoc/iftwf/WF8F11A.php?f_menuname=%AD%D3%A4H%AEt%B0%B2%A4%EB%BE%E4%AA%ED'
+  // 登入行政 e 化系統
+  const eSystemSelector = '.row-fluid:nth-child(6) button';
   const action = program.action;
-  // Random delay in 30 mins
-  await delay(Math.floor(Math.random() * 1000 * 30));
 
   // 打卡 or 登入
-  await page.goto(signInUrl);
-  await page.type('#psnCode', credential.id);
-  await page.type('#password', credential.password);
-  await page.keyboard.press('CapsLock');
+  await login(page, signInUrl, credential.id, credential.password);
+  // 取得放假日
+  await page.click(eSystemSelector);
+  // 一定要等久一點，不然會非法登入
+  await delay(3000);
+  await page.goto(calendarUrl);
+  // 抓取 紅色日子
+  await delay(3000);
+  const text = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
+  const holidays = text.map(Number);
+  console.log(`假期:\n${holidays}`);
+  // 與今天比較，如果今天是假期，就不打卡
+  var today = new Date();
+  console.log(today);
+  if (holidays.includes(today.getDate())) {
+    console.log(`今天(${today})放假嚕～ 不用打卡`)
+    await browser.close();
+    process.exit();
+  }
 
+  // 再次登入簽到/簽退
+  await login(page, signInUrl, credential.id, credential.password);
   if (action === 'signin') {
     await page.click(signInSelector);
   } else if (action == 'signout') {
@@ -47,13 +77,12 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
   }
 
   // 查看結果
-  await page.goto(signInUrl);
-  await page.type('#psnCode', credential.id);
-  await page.type('#password', credential.password);
-  await page.keyboard.press('CapsLock');
+  await login(page, signInUrl, credential.id, credential.password);
   await page.click(lookupSelector);
-  await delay(1000);
-  await page.screenshot({path: screenshotPath});
+  await delay(3000);
+  await page.screenshot({
+    path: screenshotPath
+  });
 
   if (program.sendMail) {
     mail({
@@ -61,14 +90,10 @@ const delay = (ms) => (new Promise(r => setTimeout(r, ms)));
       to: credential.email, // list of receivers
       subject: '線上簽到退作業結果', // Subject line
       text: '', // plaintext body
-      attachments: [
-        {   
-          filePath : screenshotPath,
-        },
-      ]
+      attachments: [{
+        filePath: screenshotPath,
+      }, ]
     });
   }
-
   await browser.close();
 })();
-
