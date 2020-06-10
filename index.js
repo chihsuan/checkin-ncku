@@ -24,7 +24,9 @@ const login = async (page, url, id, pw) => {
 
 (async () => {
   // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
-  await delay(Math.floor(Math.random() * 1000 * 60 * 30));
+  var waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
+  console.log(`${process.argv[1]\nWaiting Time: ${waitMilliSec/(60 * 1000)} mins`);
+  await delay(waitMilliSec);
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
   const browser = await puppeteer.launch({
     headless: true
