@@ -61,6 +61,6 @@ node <user-3>.js -a 'signout' -m 'true' &
 
 Update Crontab (**Absolute Path is needed**)
 ```
-0 8 * * 1-5 sh ~/checkin-ncku-master/signin.sh > ~/in-log
-30 17 * * 1-5 sh ~/checkin-ncku-master/signout.sh > ~/out-log
+0 8 * * * sh ~/checkin-ncku-master/signin.sh > ~/in-log
+30 17 * * * sh ~/checkin-ncku-master/signout.sh > ~/out-log
 ```
