@@ -1,3 +1,4 @@
+const fs = require('fs');
 const puppeteer = require('puppeteer');
 const mail = require("nodemailer").mail;
 const credential = require('./credential.json');
@@ -21,12 +22,16 @@ const login = async (page, url, id, pw) => {
   await page.keyboard.press('CapsLock');
   await delay(3000);
 }
+const writefile = (text) => {
+  fs.writeFile('holiday-of-month.txt', text, function (err) {
+    if (err)
+        console.log(err);
+    else
+        console.log('Write operation complete.');
+  });
+}
 
 (async () => {
-  // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
-  var waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
-  console.log(`${process.argv[1]}\nWaiting Time: ${waitMilliSec/(60 * 1000)} mins`);
-  await delay(waitMilliSec);
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
   const browser = await puppeteer.launch({
     headless: true
@@ -49,19 +54,40 @@ const login = async (page, url, id, pw) => {
 
   // 打卡 or 登入
   await login(page, signInUrl, credential.id, credential.password);
-  // 取得放假日
-  await page.click(eSystemSelector);
-  // 一定要等久一點，不然會非法登入
-  await delay(3000);
-  await page.goto(calendarUrl);
-  // 抓取 紅色日子
-  await delay(3000);
-  const text = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
-  const holidays = text.map(Number);
+
+
+  var today = new Date(), y = today.getFullYear(), m = today.getMonth();
+  var lastDay = new Date(y, m + 1, 0);
+
+  // 如果今天是這個月的最後一天，把下個月的假期存起來
+  if(today.getTime() == lastDay.getTime()) {
+    // 取得放假日
+    await page.click(eSystemSelector);
+    // 一定要等久一點，不然會非法登入
+    await delay(5000);
+    await page.goto(calendarUrl);
+    // 抓取 紅色日子
+    await delay(3000);   // 取得該頁面所有連結
+    var nextMonthURL = await page.evaluate(
+      () => Array.from(
+        document.querySelectorAll('a[href]'),
+        a => a.getAttribute('href')
+      )
+    );
+    // 選取最後一個，並補上前綴，然後前往
+    await page.goto('https://eadm.ncku.edu.tw/welldoc/iftwf/' + nextMonthURL[nextMonthURL.length - 1]);
+    await delay(3000);
+    const nextMonthHolidays = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
+    writefile(nextMonthHolidays.toString());
+  }
+
+  // 把存起來的假期拿出來
+  const text = fs.readFileSync('holiday-of-month.txt', 'utf8');
+  const holidays = text.split(',').map(Number);
+
   console.log(`假期:\n${holidays}`);
   // 與今天比較，如果今天是假期，就不打卡
-  var today = new Date();
-  console.log(today);
+  console.log(`${today}`);
   if (holidays.includes(today.getDate())) {
     console.log(`今天(${today})放假嚕～ 不用打卡`)
     await browser.close();
