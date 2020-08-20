@@ -51,6 +51,7 @@ const writefile = (text) => {
   const eSystemSelector = '.row-fluid:nth-child(5) button';
   const action = program.action;
 
+  console.log(`${process.argv[1]}`)
   // 打卡 or 登入
   await login(page, signInUrl, credential.id, credential.password);
 
