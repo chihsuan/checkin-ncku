@@ -96,16 +96,25 @@ const writefile = (text) => {
 
   // 再次登入簽到/簽退
   await login(page, signInUrl, credential.id, credential.password);
+  await page.click(lookupSelector);
+  await delay(3000)
+  // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
+  var waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
   if (action === 'signin') {
+    console.log(`Login Waiting Time: ${waitMilliSec/(60 * 1000)} mins`);
+    await delay(waitMilliSec);
     await page.click(signInSelector);
   } else if (action == 'signout') {
+    const signInTimeArray = await page.evaluate(() => Array.from(document.querySelectorAll('#checkinList tr.ng-scope.signin td:nth-child(4)'), element => element.textContent));
+    console.log(`Today signin time: ${signInTimeArray}`);
+    // Get Minute
+    const signInMinute = parseInt(signInTimeArray.sort()[0].split(':')[1]);
+    console.log(`Get signin earliest minute: ${signInMinute}`);
+    console.log(`Logout Waiting Time: ${waitMilliSec/(60 * 1000)} mins + Offset: ${signInMinute} mins`);
+    await delay(waitMilliSec + (signInMinute * 60 * 1000));
     await page.click(signOutSelector);
-  } else {
-    await page.click(signInSystemSelector);
-  }
+  } else {}
 
-  // 查看結果
-  await login(page, signInUrl, credential.id, credential.password);
   await page.click(lookupSelector);
   await delay(3000);
   await page.screenshot({
