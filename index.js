@@ -56,8 +56,8 @@ const writefile = (text) => {
   await login(page, signInUrl, credential.id, credential.password);
 
 
-  var today = new Date(), y = today.getFullYear(), m = today.getMonth();
-  var lastDay = new Date(y, m + 1, 0);
+  const today = new Date(), y = today.getFullYear(), m = today.getMonth();
+  const lastDay = new Date(y, m + 1, 0);
 
   // 如果今天是這個月的最後一天，把下個月的假期存起來
   if(today.getTime() == lastDay.getTime()) {
@@ -68,7 +68,7 @@ const writefile = (text) => {
     await page.goto(calendarUrl);
     // 抓取 紅色日子
     await delay(3000);   // 取得該頁面所有連結
-    var nextMonthURL = await page.evaluate(
+    const nextMonthURL = await page.evaluate(
       () => Array.from(
         document.querySelectorAll('a[href]'),
         a => a.getAttribute('href')
@@ -99,7 +99,7 @@ const writefile = (text) => {
   await page.click(lookupSelector);
   await delay(3000)
   // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
-  var waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
+  const waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
   if (action === 'signin') {
     console.log(`Login Waiting Time: ${waitMilliSec/(60 * 1000)} mins`);
     await delay(waitMilliSec);
