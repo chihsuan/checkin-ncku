@@ -109,7 +109,7 @@ const isLastDay = (dt) => {
     console.log(`Login Waiting Time: ${waitMilliSec/(60 * 1000)} mins`);
     await delay(waitMilliSec);
     await page.click(signInSelector);
-  } else if (action == 'signout') {
+  } else if (action === 'signout') {
     const signInTimeArray = await page.evaluate(() => Array.from(document.querySelectorAll('#checkinList tr.ng-scope.signin td:nth-child(4)'), element => element.textContent));
     console.log(`Today signin time: ${signInTimeArray}`);
     // Get Minute
@@ -118,7 +118,7 @@ const isLastDay = (dt) => {
     console.log(`Logout Waiting Time: ${waitMilliSec/(60 * 1000)} mins + Offset: ${signInMinute} mins`);
     await delay(waitMilliSec + (signInMinute * 60 * 1000));
     await page.click(signOutSelector);
-  } else {}
+  }
 
   await page.click(lookupSelector);
   await delay(3000);
