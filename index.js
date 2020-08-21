@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fsp = require('fs').promises;
 const puppeteer = require('puppeteer');
 const mail = require("nodemailer").mail;
 const credential = require('./credential.json');
@@ -22,8 +22,8 @@ const login = async (page, url, id, pw) => {
   await page.keyboard.press('CapsLock');
   await delay(3000);
 }
-const writefile = (text) => {
-  fs.writeFile('holiday-of-month.txt', text, function (err) {
+const writefile = async (text) => {
+  await fsp.writeFile('holiday-of-month.txt', text, function (err) {
     if (err)
         console.log(err);
     else
@@ -78,11 +78,11 @@ const writefile = (text) => {
     await page.goto('https://eadm.ncku.edu.tw/welldoc/iftwf/' + nextMonthURL[nextMonthURL.length - 1]);
     await delay(3000);
     const nextMonthHolidays = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
-    writefile(nextMonthHolidays.toString());
+    await writefile(nextMonthHolidays.toString());
   }
 
   // 把存起來的假期拿出來
-  const text = fs.readFileSync('holiday-of-month.txt', 'utf8');
+  const text = await fsp.readFile('holiday-of-month.txt', 'utf8');
   const holidays = text.split(',').map(Number);
 
   console.log(`假期:\n${holidays}`);
