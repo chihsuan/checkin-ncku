@@ -31,6 +31,12 @@ const writefile = async (text) => {
   });
 }
 
+const isLastDay = (dt) => {
+  const test = new Date(dt.getTime());
+  test.setDate(test.getDate() + 1);
+  return test.getDate() === 1;
+}
+
 (async () => {
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
   const browser = await puppeteer.launch({
@@ -56,18 +62,18 @@ const writefile = async (text) => {
   await login(page, signInUrl, credential.id, credential.password);
 
 
-  const today = new Date(), y = today.getFullYear(), m = today.getMonth();
-  const lastDay = new Date(y, m + 1, 0);
+  const today = new Date()
 
   // 如果今天是這個月的最後一天，把下個月的假期存起來
-  if(today.getTime() == lastDay.getTime()) {
+  if(isLastDay(today)) {
     // 取得放假日
     await page.click(eSystemSelector);
     // 一定要等久一點，不然會非法登入
     await delay(5000);
     await page.goto(calendarUrl);
     // 抓取 紅色日子
-    await delay(3000);   // 取得該頁面所有連結
+    await delay(3000);   
+    // 取得該頁面所有連結
     const nextMonthURL = await page.evaluate(
       () => Array.from(
         document.querySelectorAll('a[href]'),
