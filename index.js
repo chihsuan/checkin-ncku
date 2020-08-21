@@ -19,7 +19,6 @@ const login = async (page, url, id, pw) => {
   await delay(3000);
   await page.type('#psnCode', id);
   await page.type('#password', pw);
-  await page.keyboard.press('CapsLock');
   await delay(3000);
 }
 const writefile = async (text) => {
