@@ -48,13 +48,13 @@ const isLastDay = (dt) => {
     width: 1024,
     height: 728
   });
-  const signInSelector = '.row-fluid:nth-child(3) button:nth-child(1)';
-  const signOutSelector = '.row-fluid:nth-child(3) button:nth-child(2)';
-  const lookupSelector = '.row-fluid:nth-child(4) button:nth-child(1)';
+  const signInSelector = '.btn-success';
+  const signOutSelector = '.btn-warning';
+  const lookupSelector = '.btn-small';
   // 學校日曆
   const calendarUrl = 'https://eadm.ncku.edu.tw/welldoc/iftwf/WF8F11A.php?f_menuname=%AD%D3%A4H%AEt%B0%B2%A4%EB%BE%E4%AA%ED'
   // 登入行政 e 化系統
-  const eSystemSelector = '.row-fluid:nth-child(5) button';
+  const eSystemSelector = '.row-fluid:nth-child(6) button';
   const action = program.action;
 
   console.log(`${process.argv[1]}`)
