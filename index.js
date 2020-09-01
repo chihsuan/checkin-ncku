@@ -89,7 +89,7 @@ const isLastDay = (dt) => {
 
   // 把存起來的假期拿出來
   const text = await fsp.readFile('holiday-of-month.txt', 'utf8');
-  const holidays = text.split(',').map(Number);
+  const holidays = text.match(/\d+/g).map(Number);
 
   console.log(`假期:\n${holidays}`);
   // 與今天比較，如果今天是假期，就不打卡
