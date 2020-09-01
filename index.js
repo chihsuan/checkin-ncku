@@ -96,6 +96,7 @@ const isLastDay = (dt) => {
     await writefile('holiday-of-month.txt', holidays_str.toString());
   }
 
+  // 把字串中非數字的字元去掉
   let holidays = holidays_str.match(/\d+/g).map(Number);
   console.log(`假期:\n${holidays}`);
   // 與今天比較，如果今天是假期，就不打卡
