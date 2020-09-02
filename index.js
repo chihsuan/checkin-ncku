@@ -19,6 +19,7 @@ const login = async (page, url, id, pw) => {
   await delay(3000);
   await page.type('#psnCode', id);
   await page.type('#password', pw);
+  await page.keyboard.press('CapsLock');
   await delay(3000);
 }
 const writefile = async (text) => {
@@ -47,13 +48,13 @@ const isLastDay = (dt) => {
     width: 1024,
     height: 728
   });
-  const signInSelector = '.row-fluid:nth-child(3) button:nth-child(1)';
-  const signOutSelector = '.row-fluid:nth-child(3) button:nth-child(2)';
-  const lookupSelector = '.row-fluid:nth-child(4) button:nth-child(1)';
+  const signInSelector = '.btn-success';
+  const signOutSelector = '.btn-warning';
+  const lookupSelector = '.btn-small';
   // 學校日曆
   const calendarUrl = 'https://eadm.ncku.edu.tw/welldoc/iftwf/WF8F11A.php?f_menuname=%AD%D3%A4H%AEt%B0%B2%A4%EB%BE%E4%AA%ED'
   // 登入行政 e 化系統
-  const eSystemSelector = '.row-fluid:nth-child(5) button';
+  const eSystemSelector = '.row-fluid:nth-child(6) button';
   const action = program.action;
 
   console.log(`${process.argv[1]}`)
@@ -88,7 +89,7 @@ const isLastDay = (dt) => {
 
   // 把存起來的假期拿出來
   const text = await fsp.readFile('holiday-of-month.txt', 'utf8');
-  const holidays = text.split(',').map(Number);
+  const holidays = text.match(/\d+/g).map(Number);
 
   console.log(`假期:\n${holidays}`);
   // 與今天比較，如果今天是假期，就不打卡
