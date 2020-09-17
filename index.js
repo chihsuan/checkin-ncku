@@ -40,13 +40,13 @@ const isLastDay = (dt) => {
 (async () => {
   const signInUrl = 'http://eadm.ncku.edu.tw/welldoc/ncku/iftwd/signIn.php';
   const browser = await puppeteer.launch({
-    headless: true
+    headless: false
   });
   const page = await browser.newPage();
 
   page.setViewport({
     width: 1024,
-    height: 728
+    height: 1024
   });
   const signInSelector = '.btn-success';
   const signOutSelector = '.btn-warning';
