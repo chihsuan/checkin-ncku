@@ -91,7 +91,7 @@ const isLastDay = (dt) => {
 
   // 如果今天是 1 號，把已經存起來的假期換成這個月的
   // 不直接覆蓋的原因是多個程式會同時存取並使用 'holiday-of-month.txt'
-  if (today.getDate === 1){
+  if (today.getDate() === 1){
     holidays_str = await fsp.readFile('holiday-of-next-month.txt', 'utf8');
     await writefile('holiday-of-month.txt', holidays_str.toString());
   }
@@ -112,7 +112,7 @@ const isLastDay = (dt) => {
   await page.click(lookupSelector);
   await delay(3000)
   // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
-  const waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
+  const waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 29);
   if (action === 'signin') {
     console.log(`Login Waiting Time: ${waitMilliSec/(60 * 1000)} mins`);
     await delay(waitMilliSec);
