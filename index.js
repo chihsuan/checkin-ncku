@@ -54,7 +54,7 @@ const isLastDay = (dt) => {
   // 學校日曆
   const calendarUrl = 'https://eadm.ncku.edu.tw/welldoc/iftwf/WF8F11A.php?f_menuname=%AD%D3%A4H%AEt%B0%B2%A4%EB%BE%E4%AA%ED'
   // 登入行政 e 化系統
-  const eSystemSelector = '.row-fluid:nth-child(5) button';
+  const eSystemSelector = '.row-fluid:nth-child(6) button';
   const action = program.action;
 
   console.log(`${process.argv[1]}`)
@@ -88,6 +88,7 @@ const isLastDay = (dt) => {
     const nextMonthHolidays = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
     await writefile('holiday-of-next-month.txt', nextMonthHolidays.toString());
   }
+
 
   // 如果今天是 1 號，把已經存起來的假期換成這個月的
   // 不直接覆蓋的原因是多個程式會同時存取並使用 'holiday-of-month.txt'
