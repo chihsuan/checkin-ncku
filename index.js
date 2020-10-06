@@ -22,8 +22,8 @@ const login = async (page, url, id, pw) => {
   // await page.keyboard.press('CapsLock');
   await delay(3000);
 }
-const writefile = async (text) => {
-  await fsp.writeFile('holiday-of-month.txt', text, function (err) {
+const writefile = async (name, text) => {
+  await fsp.writeFile(name, text, function (err) {
     if (err)
         console.log(err);
     else
@@ -62,7 +62,9 @@ const isLastDay = (dt) => {
   await login(page, signInUrl, credential.id, credential.password);
 
 
-  const today = new Date()
+  const today = new Date();
+  // 把存起來的假期拿出來
+  let holidays_str = await fsp.readFile('holiday-of-month.txt', 'utf8');
 
   // 如果今天是這個月的最後一天，把下個月的假期存起來
   if(isLastDay(today)) {
@@ -84,13 +86,18 @@ const isLastDay = (dt) => {
     await page.goto('https://eadm.ncku.edu.tw/welldoc/iftwf/' + nextMonthURL[nextMonthURL.length - 1]);
     await delay(3000);
     const nextMonthHolidays = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
-    await writefile(nextMonthHolidays.toString());
+    await writefile('holiday-of-next-month.txt', nextMonthHolidays.toString());
   }
 
-  // 把存起來的假期拿出來
-  const text = await fsp.readFile('holiday-of-month.txt', 'utf8');
-  const holidays = text.match(/\d+/g).map(Number);
+  // 如果今天是 1 號，把已經存起來的假期換成這個月的
+  // 不直接覆蓋的原因是多個程式會同時存取並使用 'holiday-of-month.txt'
+  if (today.getDate() === 1){
+    holidays_str = await fsp.readFile('holiday-of-next-month.txt', 'utf8');
+    await writefile('holiday-of-month.txt', holidays_str.toString());
+  }
 
+  // 把字串中非數字的字元去掉
+  let holidays = holidays_str.match(/\d+/g).map(Number);
   console.log(`假期:\n${holidays}`);
   // 與今天比較，如果今天是假期，就不打卡
   console.log(`${today}`);
@@ -105,7 +112,7 @@ const isLastDay = (dt) => {
   await page.click(lookupSelector);
   await delay(3000)
   // Random delay in 30 mins, 不然人家覺得你固定時間打卡會被罵喔
-  const waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 30);
+  const waitMilliSec = Math.floor(Math.random() * 1000 * 60 * 29);
   if (action === 'signin') {
     console.log(`Login Waiting Time: ${waitMilliSec/(60 * 1000)} mins`);
     await delay(waitMilliSec);
