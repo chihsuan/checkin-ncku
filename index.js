@@ -54,7 +54,7 @@ const isLastDay = (dt) => {
   // 學校日曆
   const calendarUrl = 'https://eadm.ncku.edu.tw/welldoc/iftwf/WF8F11A.php?f_menuname=%AD%D3%A4H%AEt%B0%B2%A4%EB%BE%E4%AA%ED'
   // 登入行政 e 化系統
-  const eSystemSelector = '.row-fluid:nth-child(6) button';
+  const eSystemSelector = '.row-fluid:nth-last-child(1) button';
   const action = program.action;
 
   console.log(`${process.argv[1]}`)
