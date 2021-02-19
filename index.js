@@ -19,7 +19,7 @@ const login = async (page, url, id, pw) => {
   await delay(3000);
   await page.type('#psnCode', id);
   await page.type('#password', pw);
-  await page.keyboard.press('CapsLock');
+  // await page.keyboard.press('CapsLock');
   await delay(3000);
 }
 const writefile = async (name, text) => {
@@ -88,6 +88,7 @@ const isLastDay = (dt) => {
     const nextMonthHolidays = await page.evaluate(() => Array.from(document.querySelectorAll('table:nth-child(2) :nth-child(1) td[bgcolor="#FFCCCC"]'), element => element.textContent));
     await writefile('holiday-of-next-month.txt', nextMonthHolidays.toString());
   }
+
 
   // 如果今天是 1 號，把已經存起來的假期換成這個月的
   // 不直接覆蓋的原因是多個程式會同時存取並使用 'holiday-of-month.txt'
